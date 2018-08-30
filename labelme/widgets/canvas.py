@@ -216,8 +216,17 @@ class Canvas(QtWidgets.QWidget):
         # Polygon/Vertex moving.
         self.movingShape = False
         if QtCore.Qt.LeftButton & ev.buttons():
+            # Start Modified by Minming Qian 30-08-2018，
             if self.selectedVertex():
-                self.boundedMoveVertex(pos)
+                # here we need to know if it is rectangle or polygon
+                # self.line is the last shape we draw, need the shape
+                # we clicked now， the hShape is the highlight shape
+                if self.hShape.isRectangle():
+                    self.boundedMoveRectangleVertex(pos)
+                else:
+                    self.boundedMoveVertex(pos)
+            # End modification
+
                 self.repaint()
                 self.movingShape = True
             elif self.selectedShape and self.prevPoint:
@@ -411,6 +420,30 @@ class Canvas(QtWidgets.QWidget):
         x2 = (rect.x() + rect.width()) - point.x()
         y2 = (rect.y() + rect.height()) - point.y()
         self.offsets = QtCore.QPoint(x1, y1), QtCore.QPoint(x2, y2)
+
+    # Added by Minming Qian, 30-08-2018, move the vertext of rectangle
+    def boundedMoveRectangleVertex(self, pos):
+        index, shape = self.hVertex, self.hShape
+        point = shape[index]
+        if self.outOfPixmap(pos):
+            pos = self.intersectionPoint(point, pos)
+
+        shape.moveVertexBy(index, pos - point)
+        pindex = (index + 4 - 1) % 4
+        nindex = (index + 1) % 4
+        #previous x change, next y change
+        if index == 0 or index == 2:
+            ychange = QtCore.QPoint(shape[nindex].x(), pos.y())
+            xchange = QtCore.QPoint(pos.x(), shape[pindex].y())
+            shape.moveVertexBy(pindex, xchange - shape[pindex])
+            shape.moveVertexBy(nindex, ychange - shape[nindex])
+        #previous y change, next x change
+        else:
+            ychange = QtCore.QPoint(shape[pindex].x(), pos.y())
+            xchange = QtCore.QPoint(pos.x(), shape[nindex].y())
+            shape.moveVertexBy(pindex, ychange - shape[pindex])
+            shape.moveVertexBy(nindex, xchange - shape[nindex])
+
 
     def boundedMoveVertex(self, pos):
         index, shape = self.hVertex, self.hShape

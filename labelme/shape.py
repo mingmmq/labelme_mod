@@ -184,6 +184,19 @@ class Shape(object):
         shape.fill_color = copy.deepcopy(self.fill_color)
         return shape
 
+    # Added by Minming Qian 30-08-2018, check the shape is rectangle or not
+    def isRectangle(self):
+        if len(self.points) != 4:
+            return False
+
+        if self.points[0].y() == self.points[1].y() and \
+            self.points[1].x() == self.points[2].x() and \
+            self.points[2].y() == self.points[3].y() and \
+            self.points[3].x() == self.points[0].x():
+            return True
+
+        return False
+
     def __len__(self):
         return len(self.points)
 
