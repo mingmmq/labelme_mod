@@ -157,7 +157,18 @@ class Canvas(QtWidgets.QWidget):
         if self.drawing():
             self.overrideCursor(CURSOR_DRAW)
             if not self.current:
+
+                # Start Add by Minming Qian 30-08-2018, add reference line
+                # when moving the mouse
+                self.prevPoint = pos
+                self.repaint()
+                # End Add
+
                 return
+
+            # Start Add by Minming Qian 30-08-2018, set the prevPoint
+            self.prevPoint = QtCore.QPointF()
+            # End add by Minming Qian
 
             color = self.lineColor
             if self.outOfPixmap(pos):
@@ -501,6 +512,16 @@ class Canvas(QtWidgets.QWidget):
             drawing_shape.fill = True
             drawing_shape.fill_color.setAlpha(64)
             drawing_shape.paint(p)
+
+        # Start add by Minming Qian 30-08-2018, paint the reference line
+        if self.drawing() and not \
+            self.prevPoint.isNull() and not \
+            self.outOfPixmap(self.prevPoint):
+
+            p.setPen(QtGui.QColor(0, 0, 0))
+            p.drawLine(self.prevPoint.x(), 0, self.prevPoint.x(), self.pixmap.height())
+            p.drawLine(0, self.prevPoint.y(), self.pixmap.width(), self.prevPoint.y())
+        # End add by Minming Qian 30-08-2018
 
         p.end()
 
