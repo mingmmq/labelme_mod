@@ -216,7 +216,7 @@ class Canvas(QtWidgets.QWidget):
         # Polygon/Vertex moving.
         self.movingShape = False
         if QtCore.Qt.LeftButton & ev.buttons():
-            # Start Modified by Minming Qian 30-08-2018，
+            # Start Modified by Minming Qian 30-08-2018
             if self.selectedVertex():
                 # here we need to know if it is rectangle or polygon
                 # self.line is the last shape we draw, need the shape
