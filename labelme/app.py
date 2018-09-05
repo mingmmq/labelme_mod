@@ -760,8 +760,8 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
 
     def loadLabels(self, shapes):
         s = []
-        for label, points, line_color, fill_color in shapes:
-            shape = Shape(label=label)
+        for type, label, points, line_color, fill_color in shapes:
+            shape = Shape(label=label, type=type)
             for x, y in points:
                 shape.addPoint(QtCore.QPoint(x, y))
             shape.close()
@@ -784,12 +784,15 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         lf = LabelFile()
 
         def format_shape(s):
-            return dict(label=str(s.label),
+            #Mod Minming
+            return dict(type=str(s.type),
+                        label=str(s.label),
                         line_color=s.line_color.getRgb()
                         if s.line_color != self.lineColor else None,
                         fill_color=s.fill_color.getRgb()
                         if s.fill_color != self.fillColor else None,
                         points=[(p.x(), p.y()) for p in s.points])
+            #End mod
 
         shapes = [format_shape(shape) for shape in self.labelList.shapes]
         flags = {}

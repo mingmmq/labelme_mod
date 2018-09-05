@@ -47,10 +47,12 @@ class LabelFile(object):
             imagePath = data['imagePath']
             lineColor = data['lineColor']
             fillColor = data['fillColor']
+            #Start Mod by Minming
             shapes = (
-                (s['label'], s['points'], s['line_color'], s['fill_color'])
+                (s['type'], s['label'], s['points'], s['line_color'], s['fill_color'])
                 for s in data['shapes']
             )
+            #End Mod
         except Exception as e:
             raise LabelFileError(e)
 

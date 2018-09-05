@@ -34,11 +34,12 @@ class Shape(object):
     point_size = 8
     scale = 1.0
 
-    def __init__(self, label=None, line_color=None):
+    def __init__(self, label=None, line_color=None, type=None):
         self.label = label
         self.points = []
         self.fill = False
         self.selected = False
+        self.type = type
 
         self._highlightIndex = None
         self._highlightMode = self.NEAR_VERTEX
@@ -96,11 +97,14 @@ class Shape(object):
             # may be desirable.
             # self.drawVertex(vrtx_path, 0)
 
+
             for i, p in enumerate(self.points):
                 line_path.lineTo(p)
                 self.drawVertex(vrtx_path, i)
-            if self.isClosed():
+            #Mod by Minming Qian, line should not close
+            if self.isClosed() and self.type != "line":
                 line_path.lineTo(self.points[0])
+            #End mod
 
             painter.drawPath(line_path)
             painter.drawPath(vrtx_path)
@@ -175,7 +179,7 @@ class Shape(object):
         self._highlightIndex = None
 
     def copy(self):
-        shape = Shape(self.label)
+        shape = Shape(self.label, self.type)
         shape.points = [copy.deepcopy(p) for p in self.points]
         shape.fill = self.fill
         shape.selected = self.selected

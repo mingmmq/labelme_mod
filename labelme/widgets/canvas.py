@@ -191,9 +191,11 @@ class Canvas(QtWidgets.QWidget):
                     (self.current[0], pos)
                 ))
                 self.line.close()
+            #Start modify, Minming Qian, 04-09-2018
             elif self.createMode == 'line':
-                self.line.points = [self.current[0], pos]
-                self.line.close()
+                self.line[0] = self.current[-1]
+                self.line[1] = pos
+            #End modify
             elif self.createMode == 'point':
                 self.line.points = [self.current[0]]
                 self.line.close()
@@ -220,7 +222,7 @@ class Canvas(QtWidgets.QWidget):
             if self.selectedVertex():
                 # here we need to know if it is rectangle or polygon
                 # self.line is the last shape we draw, need the shape
-                # we clicked now， the hShape is the highlight shape
+                # we clicked now the hShape is the highlight shape
                 if self.hShape.isRectangle():
                     self.boundedMoveRectangleVertex(pos)
                 else:
@@ -307,18 +309,21 @@ class Canvas(QtWidgets.QWidget):
             if self.drawing():
                 if self.current:
                     # Add point to existing shape.
-                    if self.createMode == 'polygon':
+                    # Start modified by Minming Qian modify line to multi-line
+                    if self.createMode in ['polygon', 'line']:
                         self.current.addPoint(self.line[1])
                         self.line[0] = self.current[-1]
                         if self.current.isClosed():
                             self.finalise()
-                    elif self.createMode in ['rectangle', 'line']:
+                    elif self.createMode == 'rectangle':
                         assert len(self.current.points) == 1
                         self.current.points = self.line.points
                         self.finalise()
+                    # End modified
+
                 elif not self.outOfPixmap(pos):
                     # Create new shape.
-                    self.current = Shape()
+                    self.current = Shape(type=self.createMode)
                     self.current.addPoint(pos)
                     if self.createMode == 'point':
                         self.finalise()
@@ -385,6 +390,14 @@ class Canvas(QtWidgets.QWidget):
     def mouseDoubleClickEvent(self, ev):
         # We need at least 4 points here, since the mousePress handler
         # adds an extra one before this handler is called.
+
+        # Start Modify Minming Qian,
+        if self.drawing() and \
+                self.createMode == "line" and \
+                len(self.current) > 1:
+            self.current.popPoint()
+            self.finalise()
+        # End Modify
         if self.canCloseShape() and len(self.current) > 3:
             self.current.popPoint()
             self.finalise()
@@ -577,7 +590,11 @@ class Canvas(QtWidgets.QWidget):
 
     def finalise(self):
         assert self.current
-        self.current.close()
+        #Start add by Minming Qian, line finalise
+        if self.createMode != "line":
+            self.current.close()
+        #End add
+
         self.shapes.append(self.current)
         self.storeShapes()
         self.current = None
