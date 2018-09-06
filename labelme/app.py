@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import functools
@@ -264,6 +263,11 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         help = action('教程', self.tutorial, icon='help',
                       tip='Show tutorial page')
 
+        #Start add by Minming Qian
+        version = action('版本信息', self.showVersion, icon='eye',
+                      tip='Show version information')
+        #End add
+
         zoom = QtWidgets.QWidgetAction(self)
         zoom.setDefaultWidget(self.zoomWidget)
         self.zoomWidget.setWhatsThis(
@@ -391,7 +395,9 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         addActions(self.menus.file, (open_, openNextImg, openPrevImg, opendir,
                                      self.menus.recentFiles,
                                      save, saveAs, close, None, quit))
-        addActions(self.menus.help, (help,))
+        #Start mod by Minming Qian
+        addActions(self.menus.help, (help, version))
+        #End mod
         addActions(self.menus.view, (
             self.flag_dock.toggleViewAction(),
             self.labelsdock.toggleViewAction(),
@@ -599,6 +605,18 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
     def tutorial(self):
         url = 'https://github.com/wkentaro/labelme/tree/master/examples/tutorial'  # NOQA
         webbrowser.open(url)
+
+    #Start Add by Minming Qian
+    def showVersion(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Information)
+        msg.setText("Version:")
+        msg.setInformativeText("V1.0 build 20180906")
+        msg.setWindowTitle("Version Information")
+        msg.setDetailedText("Version: V1.0 build 20180906")
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        reval = msg.exec_()
+    #End
 
     def toggleAddPointEnabled(self, enabled):
         self.actions.addPoint.setEnabled(enabled)

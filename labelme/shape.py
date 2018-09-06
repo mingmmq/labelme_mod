@@ -92,7 +92,10 @@ class Shape(object):
             self.line_color = DEFAULT_LINE_COLOR
         else:
             r = self.onebyte_hash(self.label[0])
-            g = self.onebyte_hash(self.label[1])
+            if len(self.label) > 1:
+                g = self.onebyte_hash(self.label[1])
+            else:
+                g = 128
             b = self.onebyte_hash(self.label[-1])
             self.line_color = QtGui.QColor(r, g, b, 200)
 
@@ -101,7 +104,10 @@ class Shape(object):
             self.fill_color = DEFAULT_FILL_COLOR
         else:
             r = self.onebyte_hash(self.label[-1])
-            g = self.onebyte_hash(self.label[1])
+            if len(self.label) > 1:
+                g = self.onebyte_hash(self.label[1])
+            else:
+                g = 128
             b = self.onebyte_hash(self.label[0])
             self.fill_color = QtGui.QColor(r, g, b, 200)
     #End add
