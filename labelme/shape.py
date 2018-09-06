@@ -83,10 +83,10 @@ class Shape(object):
     def setOpen(self):
         self._closed = False
 
-    def onebyte_hash(self, s):
-        return hash(s) % 256
-
     #Add by Minming qian, set the default color for different label
+    def onebyte_hash(self, s):
+        return (ord(s) - 97) * 10 % 256
+
     def setLineColor(self):
         if self.label == None:
             self.line_color = DEFAULT_LINE_COLOR
@@ -108,9 +108,10 @@ class Shape(object):
 
 
     def paint(self, painter):
-
+        #Start Add by Minming Qian
         self.setLineColor()
         self.setFillColor()
+        #End add
 
         if self.points:
             color = self.select_line_color \
@@ -211,12 +212,12 @@ class Shape(object):
         self._highlightIndex = None
 
     def copy(self):
-        #Mod by Minming Qian
+        #Mod by Minming Qian, should be fine with the type,
         shape = Shape(self.label, self.type)
-        #
+        shape.type = self.type
+        #End mod
         shape.points = [copy.deepcopy(p) for p in self.points]
         shape.fill = self.fill
-        shape.type = self.type
         shape.selected = self.selected
         shape._closed = self._closed
         shape.line_color = copy.deepcopy(self.line_color)
