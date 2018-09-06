@@ -9,12 +9,12 @@ import labelme.utils
 # - [opt] Store paths instead of creating new ones at each paint.
 
 
-DEFAULT_LINE_COLOR = QtGui.QColor(0, 255, 0, 128)
-DEFAULT_FILL_COLOR = QtGui.QColor(255, 0, 0, 128)
-DEFAULT_SELECT_LINE_COLOR = QtGui.QColor(255, 255, 255)
-DEFAULT_SELECT_FILL_COLOR = QtGui.QColor(0, 128, 255, 155)
-DEFAULT_VERTEX_FILL_COLOR = QtGui.QColor(0, 255, 0, 255)
-DEFAULT_HVERTEX_FILL_COLOR = QtGui.QColor(255, 0, 0)
+DEFAULT_LINE_COLOR = QtGui.QColor(0, 255, 0, 128)       #green
+DEFAULT_FILL_COLOR = QtGui.QColor(255, 0, 0, 128)       #red
+DEFAULT_SELECT_LINE_COLOR = QtGui.QColor(255, 255, 255)     #white
+DEFAULT_SELECT_FILL_COLOR = QtGui.QColor(0, 128, 255, 155)  #blue
+DEFAULT_VERTEX_FILL_COLOR = QtGui.QColor(0, 255, 0, 255)    #green
+DEFAULT_HVERTEX_FILL_COLOR = QtGui.QColor(255, 0, 0)        #red
 
 
 class Shape(object):
@@ -34,12 +34,16 @@ class Shape(object):
     point_size = 8
     scale = 1.0
 
+    #Mod by Minming Qian, add the type to shape, to tell the line
     def __init__(self, label=None, line_color=None, type=None):
         self.label = label
         self.points = []
         self.fill = False
         self.selected = False
         self.type = type
+        self.setLineColor()
+        self.setFillColor()
+    #End mod
 
         self._highlightIndex = None
         self._highlightMode = self.NEAR_VERTEX
@@ -79,7 +83,35 @@ class Shape(object):
     def setOpen(self):
         self._closed = False
 
+    def onebyte_hash(self, s):
+        return hash(s) % 256
+
+    #Add by Minming qian, set the default color for different label
+    def setLineColor(self):
+        if self.label == None:
+            self.line_color = DEFAULT_LINE_COLOR
+        else:
+            r = self.onebyte_hash(self.label[0])
+            g = self.onebyte_hash(self.label[1])
+            b = self.onebyte_hash(self.label[-1])
+            self.line_color = QtGui.QColor(r, g, b, 200)
+
+    def setFillColor(self):
+        if self.label == None:
+            self.fill_color = DEFAULT_FILL_COLOR
+        else:
+            r = self.onebyte_hash(self.label[-1])
+            g = self.onebyte_hash(self.label[1])
+            b = self.onebyte_hash(self.label[0])
+            self.fill_color = QtGui.QColor(r, g, b, 200)
+    #End add
+
+
     def paint(self, painter):
+
+        self.setLineColor()
+        self.setFillColor()
+
         if self.points:
             color = self.select_line_color \
                 if self.selected else self.line_color
@@ -101,7 +133,7 @@ class Shape(object):
             for i, p in enumerate(self.points):
                 line_path.lineTo(p)
                 self.drawVertex(vrtx_path, i)
-            #Mod by Minming Qian, line should not close
+            #Mod by Minming Qian, line should not close, to avoid close for the line
             if self.isClosed() and self.type != "line":
                 line_path.lineTo(self.points[0])
             #End mod
@@ -179,9 +211,12 @@ class Shape(object):
         self._highlightIndex = None
 
     def copy(self):
+        #Mod by Minming Qian
         shape = Shape(self.label, self.type)
+        #
         shape.points = [copy.deepcopy(p) for p in self.points]
         shape.fill = self.fill
+        shape.type = self.type
         shape.selected = self.selected
         shape._closed = self._closed
         shape.line_color = copy.deepcopy(self.line_color)

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import functools
 import os.path
 import re
@@ -91,7 +94,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.lastOpenDir = None
 
         self.flag_dock = self.flag_widget = None
-        self.flag_dock = QtWidgets.QDockWidget('Flags', self)
+        self.flag_dock = QtWidgets.QDockWidget('标记', self)
         self.flag_dock.setObjectName('Flags')
         self.flag_widget = QtWidgets.QListWidget()
         if config['flags']:
@@ -107,7 +110,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.labelList.setDragDropMode(
             QtWidgets.QAbstractItemView.InternalMove)
         self.labelList.setParent(self)
-        self.dock = QtWidgets.QDockWidget('Polygon Labels', self)
+        self.dock = QtWidgets.QDockWidget('多边形标签', self)
         self.dock.setObjectName('Labels')
         self.dock.setWidget(self.labelList)
 
@@ -118,12 +121,12 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         if self._config['labels']:
             self.uniqLabelList.addItems(self._config['labels'])
             self.uniqLabelList.sortItems()
-        self.labelsdock = QtWidgets.QDockWidget(u'Label List', self)
+        self.labelsdock = QtWidgets.QDockWidget(u'标签列表', self)
         self.labelsdock.setObjectName(u'Label List')
         self.labelsdock.setWidget(self.uniqLabelList)
 
         self.fileSearch = QtWidgets.QLineEdit()
-        self.fileSearch.setPlaceholderText('Search Filename')
+        self.fileSearch.setPlaceholderText('搜索文件名')
         self.fileSearch.textChanged.connect(self.fileSearchChanged)
         self.fileListWidget = QtWidgets.QListWidget()
         self.fileListWidget.itemSelectionChanged.connect(
@@ -134,7 +137,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         fileListLayout.setSpacing(0)
         fileListLayout.addWidget(self.fileSearch)
         fileListLayout.addWidget(self.fileListWidget)
-        self.filedock = QtWidgets.QDockWidget(u'File List', self)
+        self.filedock = QtWidgets.QDockWidget(u'文件列表', self)
         self.filedock.setObjectName(u'Files')
         fileListWidget = QtWidgets.QWidget()
         fileListWidget.setLayout(fileListLayout)
@@ -172,33 +175,34 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         # Actions
         action = functools.partial(newAction, self)
         shortcuts = self._config['shortcuts']
-        quit = action('&Quit', self.close, shortcuts['quit'], 'quit',
+        quit = action('退出', self.close, shortcuts['quit'], 'quit',
                       'Quit application')
-        open_ = action('&Open', self.openFile, shortcuts['open'], 'open',
+        open_ = action('打开', self.openFile, shortcuts['open'], 'open',
                        'Open image or label file')
-        opendir = action('&Open Dir', self.openDirDialog,
+        opendir = action('打开文件夹', self.openDirDialog,
                          shortcuts['open_dir'], 'open', u'Open Dir')
-        openNextImg = action('&Next Image', self.openNextImg,
+        openNextImg = action('下一张图', self.openNextImg,
                              shortcuts['open_next'], 'next', u'Open Next')
 
-        openPrevImg = action('&Prev Image', self.openPrevImg,
+        openPrevImg = action('前一张图', self.openPrevImg,
                              shortcuts['open_prev'], 'prev', u'Open Prev')
-        save = action('&Save', self.saveFile, shortcuts['save'], 'save',
+        save = action('保存', self.saveFile, shortcuts['save'], 'save',
                       'Save labels to file', enabled=False)
-        saveAs = action('&Save As', self.saveFileAs, shortcuts['save_as'],
+        saveAs = action('另存为', self.saveFileAs, shortcuts['save_as'],
                         'save-as', 'Save labels to a different file',
                         enabled=False)
-        close = action('&Close', self.closeFile, shortcuts['close'], 'close',
+        close = action('关闭', self.closeFile, shortcuts['close'], 'close',
                        'Close current file')
-        color1 = action('Polygon &Line Color', self.chooseColor1,
+        color1 = action('选择线条颜色', self.chooseColor1,
                         shortcuts['edit_line_color'], 'color_line',
                         'Choose polygon line color')
-        color2 = action('Polygon &Fill Color', self.chooseColor2,
+        color2 = action('选择填充颜色', self.chooseColor2,
                         shortcuts['edit_fill_color'], 'color',
                         'Choose polygon fill color')
 
+        #Start Mod by Minming
         createMode = action(
-            'Create Polygons',
+            '创建多边形',
             lambda: self.toggleDrawMode(False, createMode='polygon'),
             shortcuts['create_polygon'],
             'objects',
@@ -206,7 +210,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             enabled=True,
         )
         createRectangleMode = action(
-            'Create Rectangle',
+            '创建矩形',
             lambda: self.toggleDrawMode(False, createMode='rectangle'),
             shortcuts['create_rectangle'],
             'objects',
@@ -214,7 +218,7 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             enabled=True,
         )
         createLineMode = action(
-            'Create Line',
+            '创建线段',
             lambda: self.toggleDrawMode(False, createMode='line'),
             shortcuts['create_line'],
             'objects',
@@ -222,69 +226,69 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             enabled=True,
         )
         createPointMode = action(
-            'Create Point',
+            '创建点',
             lambda: self.toggleDrawMode(False, createMode='point'),
             shortcuts['create_point'],
             'objects',
             'Start drawing points',
             enabled=True,
         )
-        editMode = action('Edit Polygons', self.setEditMode,
+        editMode = action('编辑图形', self.setEditMode,
                           shortcuts['edit_polygon'], 'edit',
                           'Move and edit polygons', enabled=True)
 
-        delete = action('Delete Polygon', self.deleteSelectedShape,
+        delete = action('删除图形', self.deleteSelectedShape,
                         shortcuts['delete_polygon'], 'cancel',
                         'Delete', enabled=True)
-        copy = action('Duplicate Polygon', self.copySelectedShape,
+        copy = action('复制图形', self.copySelectedShape,
                       shortcuts['duplicate_polygon'], 'copy',
                       'Create a duplicate of the selected polygon',
                       enabled=False)
-        undoLastPoint = action('Undo last point', self.canvas.undoLastPoint,
+        undoLastPoint = action('撤销上一个点', self.canvas.undoLastPoint,
                                shortcuts['undo_last_point'], 'undo',
                                'Undo last drawn point', enabled=False)
-        addPoint = action('Add Point to Edge', self.canvas.addPointToEdge,
+        addPoint = action('添加点到边', self.canvas.addPointToEdge,
                           None, 'edit', 'Add point to the nearest edge',
                           enabled=False)
 
-        undo = action('Undo', self.undoShapeEdit, shortcuts['undo'], 'undo',
+        undo = action('撤销', self.undoShapeEdit, shortcuts['undo'], 'undo',
                       'Undo last add and edit of shape', enabled=False)
 
-        hideAll = action('&Hide\nPolygons',
+        hideAll = action('隐藏图形',
                          functools.partial(self.togglePolygons, False),
                          icon='eye', tip='Hide all polygons', enabled=False)
-        showAll = action('&Show\nPolygons',
+        showAll = action('显示图形',
                          functools.partial(self.togglePolygons, True),
                          icon='eye', tip='Show all polygons', enabled=False)
 
-        help = action('&Tutorial', self.tutorial, icon='help',
+        help = action('教程', self.tutorial, icon='help',
                       tip='Show tutorial page')
 
         zoom = QtWidgets.QWidgetAction(self)
         zoom.setDefaultWidget(self.zoomWidget)
         self.zoomWidget.setWhatsThis(
-            "Zoom in or out of the image. Also accessible with"
-            " %s and %s from the canvas." %
+            "放大缩小图片。 可以在画板使用"
+            " %s 和 %s." %
             (fmtShortcut('%s,%s' % (shortcuts['zoom_in'],
                                     shortcuts['zoom_out'])),
              fmtShortcut("Ctrl+Wheel")))
         self.zoomWidget.setEnabled(False)
 
-        zoomIn = action('Zoom &In', functools.partial(self.addZoom, 10),
+        zoomIn = action('放大', functools.partial(self.addZoom, 10),
                         shortcuts['zoom_in'], 'zoom-in',
                         'Increase zoom level', enabled=False)
-        zoomOut = action('&Zoom Out', functools.partial(self.addZoom, -10),
+        zoomOut = action('缩小', functools.partial(self.addZoom, -10),
                          shortcuts['zoom_out'], 'zoom-out',
                          'Decrease zoom level', enabled=False)
-        zoomOrg = action('&Original size',
+        zoomOrg = action('原始尺寸',
                          functools.partial(self.setZoom, 100),
                          shortcuts['zoom_to_original'], 'zoom',
                          'Zoom to original size', enabled=False)
-        fitWindow = action('&Fit Window', self.setFitWindow,
+        fitWindow = action('适应窗口', self.setFitWindow,
                            shortcuts['fit_window'], 'fit-window',
                            'Zoom follows window size', checkable=True,
                            enabled=False)
-        fitWidth = action('Fit &Width', self.setFitWidth,
+        fitWidth = action('适应窗口宽度', self.setFitWidth,
                           shortcuts['fit_width'], 'fit-width',
                           'Zoom follows window width',
                           checkable=True, enabled=False)
@@ -299,18 +303,18 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             self.MANUAL_ZOOM: lambda: 1,
         }
 
-        edit = action('&Edit Label', self.editLabel, shortcuts['edit_label'],
+        edit = action('编辑标签', self.editLabel, shortcuts['edit_label'],
                       'edit', 'Modify the label of the selected polygon',
                       enabled=False)
 
         shapeLineColor = action(
-            'Shape &Line Color', self.chshapeLineColor, icon='color-line',
+            '改变线条颜色', self.chshapeLineColor, icon='color-line',
             tip='Change the line color for this specific shape', enabled=False)
         shapeFillColor = action(
-            'Shape &Fill Color', self.chshapeFillColor, icon='color',
+            '改变填充颜色', self.chshapeFillColor, icon='color',
             tip='Change the fill color for this specific shape', enabled=False)
         fill_drawing = action(
-            'Fill Drawing Polygon',
+            '作图时填充',
             lambda x: self.canvas.setFillDrawing(x),
             None,
             'color',
@@ -376,11 +380,11 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         self.canvas.edgeSelected.connect(self.actions.addPoint.setEnabled)
 
         self.menus = struct(
-            file=self.menu('&File'),
-            edit=self.menu('&Edit'),
-            view=self.menu('&View'),
-            help=self.menu('&Help'),
-            recentFiles=QtWidgets.QMenu('Open &Recent'),
+            file=self.menu('文件'),
+            edit=self.menu('编辑'),
+            view=self.menu('视图'),
+            help=self.menu('帮助'),
+            recentFiles=QtWidgets.QMenu('最近打开'),
             labelList=labelMenu,
         )
 

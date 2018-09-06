@@ -111,6 +111,7 @@ class Canvas(QtWidgets.QWidget):
         self.storeShapes()
         self.repaint()
 
+    #Minming, This is entering the canvas, is not the enter keyboard
     def enterEvent(self, ev):
         self.overrideCursor(self._cursor)
 
@@ -322,8 +323,11 @@ class Canvas(QtWidgets.QWidget):
                     # End modified
 
                 elif not self.outOfPixmap(pos):
-                    # Create new shape.
+                    # Mod by Minming Qian, Create new shape,
+                    # pass the type to the shape to log line
                     self.current = Shape(type=self.createMode)
+                    # End Mod
+
                     self.current.addPoint(pos)
                     if self.createMode == 'point':
                         self.finalise()
@@ -385,6 +389,8 @@ class Canvas(QtWidgets.QWidget):
         self._hideBackround = self.hideBackround if enable else False
 
     def canCloseShape(self):
+        if self.current and self.current.type == "line" and len(self.current)>=2:
+            return True
         return self.drawing() and self.current and len(self.current) > 2
 
     def mouseDoubleClickEvent(self, ev):
