@@ -107,13 +107,8 @@ class LabelDialog(QtWidgets.QDialog):
         if text:
             self.accept()
 
-
-
     def postProcess(self):
-        #todo why the self.edit.text() always change back to the one on the history
         text = self.edit.text()
-
-
         if hasattr(text, 'strip'):
             text = text.strip()
         else:
@@ -121,7 +116,6 @@ class LabelDialog(QtWidgets.QDialog):
         self.edit.setText(text)
 
     def popUp(self, text=None, move=True):
-        # if text is None, the previous label in self.edit is kept
         if text is None:
             text = self.edit.text()
         self.edit.setText(text)
@@ -135,9 +129,4 @@ class LabelDialog(QtWidgets.QDialog):
         self.edit.setFocus(QtCore.Qt.PopupFocusReason)
         if move:
             self.move(QtGui.QCursor.pos())
-
-        #todo: what does the exec_() done here
-        if self.exec():
-            return self.edit.text()
-        else:
-            return None
+        return self.edit.text() if self.exec_() else None
