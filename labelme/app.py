@@ -702,7 +702,9 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         return False
 
     def editLabel(self, item=None):
-        if not self.canvas.editing():
+        #Mod by Minming, if not select shape not able to select shape
+        if not self.canvas.editing() or not self.canvas.selectedShape:
+        #End Mod
             return
         item = item if item else self.currentItem()
         text = self.labelDialog.popUp(item.text())
@@ -853,6 +855,10 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
             return False
 
     def copySelectedShape(self):
+        #Start Mod by Minming, check before we add label, some time it return none
+        if not self.canvas.selectedShape:
+            return
+        #End mod
         self.addLabel(self.canvas.copySelectedShape())
         # fix copy and delete
         self.shapeSelectionChanged(True)

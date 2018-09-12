@@ -18,9 +18,14 @@ class LabelQLineEdit(QtWidgets.QLineEdit):
     def setListWidget(self, list_widget):
         self.list_widget = list_widget
 
+
     def keyPressEvent(self, e):
         if e.key() in [QtCore.Qt.Key_Up, QtCore.Qt.Key_Down]:
             self.list_widget.keyPressEvent(e)
+        #Start Add by Minming to avoid the press that
+        elif e.key() == QtCore.Qt.Key_Return:
+            self.parent().done(1)
+        #End add by Minming
         else:
             super(LabelQLineEdit, self).keyPressEvent(e)
 
@@ -102,8 +107,13 @@ class LabelDialog(QtWidgets.QDialog):
         if text:
             self.accept()
 
+
+
     def postProcess(self):
+        #todo why the self.edit.text() always change back to the one on the history
         text = self.edit.text()
+
+
         if hasattr(text, 'strip'):
             text = text.strip()
         else:
@@ -125,4 +135,9 @@ class LabelDialog(QtWidgets.QDialog):
         self.edit.setFocus(QtCore.Qt.PopupFocusReason)
         if move:
             self.move(QtGui.QCursor.pos())
-        return self.edit.text() if self.exec_() else None
+
+        #todo: what does the exec_() done here
+        if self.exec():
+            return self.edit.text()
+        else:
+            return None

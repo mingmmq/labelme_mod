@@ -388,10 +388,12 @@ class Canvas(QtWidgets.QWidget):
     def setHiding(self, enable=True):
         self._hideBackround = self.hideBackround if enable else False
 
+    #Start Mod Minming Qian, to ensure line can be enclosed.
     def canCloseShape(self):
         if self.current and self.current.type == "line" and len(self.current)>=2:
             return True
         return self.drawing() and self.current and len(self.current) > 2
+    #End mod
 
     def mouseDoubleClickEvent(self, ev):
         # We need at least 4 points here, since the mousePress handler
@@ -550,6 +552,12 @@ class Canvas(QtWidgets.QWidget):
             if (shape.selected or not self._hideBackround) and \
                     self.isVisible(shape):
                 shape.fill = shape.selected or shape == self.hShape
+
+                #Start Add by Minming draw the text on the left top, comment out now
+                #if shape.points != None:
+                    #p.drawText(shape.points[0].x(), shape.points[0].y(), shape.label)
+                #End Add
+
                 shape.paint(p)
         if self.current:
             self.current.paint(p)
