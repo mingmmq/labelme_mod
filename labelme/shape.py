@@ -87,7 +87,36 @@ class Shape(object):
     def onebyte_hash(self, s):
         return (ord(s) - 97) * 10 % 256
 
+    # Add by Minming Qian 25-09-2018, specify color for known categories
+    def assign_color(self):
+        if not self.label:
+            return
+        
+        if "pillar" in self.label:
+            self.line_color = QtGui.QColor(255, 0, 0, 255) #red
+            return
+        elif "goods_pallet" in self.label:
+            self.line_color = QtGui.QColor(0, 255, 0, 255) #green
+            return
+        elif "pallet" in self.label:
+            self.line_color = QtGui.QColor(0, 0, 255, 255) #blue
+            return
+        elif "person" in self.label:
+            self.line_color = QtGui.QColor(0, 0, 0, 255) #black or white?
+            return
+        elif "forklift" in self.label:
+            self.line_color = QtGui.QColor(255,255,255,255) #black or white?
+            return
+        else:
+            pass
+    #End Add by Minming Qian 25-09-2018
+
+
     def setLineColor(self):
+        # Add by Minming Qian 25-09-2018, for specific color of different object
+        self.assign_color()
+        # End add by Minming Qian
+
         if self.label == None:
             self.line_color = DEFAULT_LINE_COLOR
         else:
@@ -100,6 +129,10 @@ class Shape(object):
             self.line_color = QtGui.QColor(r, g, b, 200)
 
     def setFillColor(self):
+        # Add by Minming Qian 25-09-2018, for specific color of different object
+        self.assign_color()
+        # End add by Minming Qian
+
         if self.label == None:
             self.fill_color = DEFAULT_FILL_COLOR
         else:
@@ -111,7 +144,6 @@ class Shape(object):
             b = self.onebyte_hash(self.label[0])
             self.fill_color = QtGui.QColor(r, g, b, 200)
     #End add
-
 
     def paint(self, painter):
         #Start Add by Minming Qian
@@ -135,7 +167,6 @@ class Shape(object):
             # for the 1st vertex, and make it non-filled, which
             # may be desirable.
             # self.drawVertex(vrtx_path, 0)
-
 
             for i, p in enumerate(self.points):
                 line_path.lineTo(p)

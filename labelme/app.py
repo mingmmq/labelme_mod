@@ -611,9 +611,9 @@ class MainWindow(QtWidgets.QMainWindow, WindowMixin):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Information)
         msg.setText("Version:")
-        msg.setInformativeText("V1.0 build 20180906")
+        msg.setInformativeText("V1.1 build 20180927")
         msg.setWindowTitle("Version Information")
-        msg.setDetailedText("Version: V1.0 build 20180906")
+        msg.setDetailedText("Specify color for known categories")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         reval = msg.exec_()
     #End
